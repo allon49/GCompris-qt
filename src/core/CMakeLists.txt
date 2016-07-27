@@ -25,6 +25,14 @@ set(gcompris_SRCS
    File.h
    DownloadManager.cpp
    DownloadManager.h
+   client.cpp
+   client.h
+   connection.cpp
+   connection.h
+   peermanager.cpp
+   peermanager.h
+   server.cpp
+   server.h
 )
 
 qt5_wrap_cpp(gcompris_MOC ${gcompris_SRCS})
