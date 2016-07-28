@@ -1,5 +1,6 @@
 /* GCompris - main.cpp
  *
+ *
  * Copyright (C) 2014 Bruno Coudoin <bruno.coudoin@gcompris.net>
  *
  * Authors:
@@ -18,6 +19,10 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
+
+#include "chatdialog.h"
+
 #include <QtDebug>
 #include <QApplication>
 #include <QQuickWindow>
@@ -108,13 +113,7 @@ QString loadTranslation(QSettings &config, QTranslator &translator)
 }
 
 
-void appendMessage(const QString &from, const QString &message)
-{
-    if (from.isEmpty() || message.isEmpty())
-        return;
 
-    qDebug() << "GCNetwork: " << message;
-}
 
 
 
@@ -168,7 +167,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    connect(&client, SIGNAL(newMessage(QString,QString)),this, SLOT(appendMessage(QString,QString)));
+    ChatDialog dialog;
 
 
 

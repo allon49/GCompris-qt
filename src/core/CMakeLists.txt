@@ -33,6 +33,8 @@ set(gcompris_SRCS
    peermanager.h
    server.cpp
    server.h
+   chatdialog.cpp
+   chatdialog.h
 )
 
 qt5_wrap_cpp(gcompris_MOC ${gcompris_SRCS})
