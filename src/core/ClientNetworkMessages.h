@@ -81,9 +81,12 @@ public:
             QJSEngine *scriptEngine);
     static ClientNetworkMessages* getInstance();
 
+    virtual ~ClientNetworkMessages();
+
 public slots:
     void appendMessage(const QString &from, const QString &message);
-    void sendMessage();
+
+    Q_INVOKABLE void sendMessage();
 
 
 

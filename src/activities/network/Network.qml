@@ -69,6 +69,7 @@ ActivityBase {
                 onClicked: {
                     console.log("button clicked")
                     ClientNetworkMessages.sendMessage()
+
                 }
             }
             MouseArea {

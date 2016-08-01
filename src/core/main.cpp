@@ -226,6 +226,7 @@ int main(int argc, char *argv[])
     ApplicationSettings::init();
 	File::init();
 	DownloadManager::init();
+    ClientNetworkMessages::init();
 
     // Tell media players to stop playing, it's GCompris time
     ApplicationInfo::getInstance()->requestAudioFocus();
