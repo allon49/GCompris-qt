@@ -21,7 +21,7 @@
  */
 
 
-#include "chatdialog.h"
+#include "ClientNetworkMessages.h"
 
 #include <QtDebug>
 #include <QApplication>
@@ -166,9 +166,6 @@ int main(int argc, char *argv[])
             settings.endGroup();
         }
     }
-
-    ChatDialog dialog;
-
 
 
 #if defined(Q_OS_MAC)

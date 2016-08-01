@@ -51,23 +51,43 @@
 #ifndef CHATDIALOG_H
 #define CHATDIALOG_H
 
+#include <QObject>
+#include <QtQml>
+#include <QQmlEngine>
+#include <QJSEngine>
 
 #include "client.h"
 
-class ChatDialog : public QObject
+
+
+class ClientNetworkMessages : public QObject
 {
     Q_OBJECT
-
-public:
-    ChatDialog(QWidget *parent = 0);
-
-public slots:
-    void appendMessage(const QString &from, const QString &message);
-
 
 
 private:
     Client client;
+    ClientNetworkMessages();  // prohibit external creation, we are a singleton!
+    static ClientNetworkMessages* _instance;  // singleton instance
+
+
+public:
+
+    /**
+     * Registers ClientNetworkMessages singleton in the QML engine.
+     */
+    static void init();
+    static QObject *systeminfoProvider(QQmlEngine *engine,
+            QJSEngine *scriptEngine);
+    static ClientNetworkMessages* getInstance();
+
+public slots:
+    void appendMessage(const QString &from, const QString &message);
+    void sendMessage();
+
+
+
+
 
 };
 

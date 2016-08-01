@@ -50,10 +50,11 @@
 
 #include <QtWidgets>
 
-#include "chatdialog.h"
+#include "ClientNetworkMessages.h"
 
-ChatDialog::ChatDialog(QWidget *parent)
-    : QObject(parent)
+ClientNetworkMessages* ClientNetworkMessages::_instance = 0;
+
+ClientNetworkMessages::ClientNetworkMessages(): QObject()
 {
 
     connect(&client, SIGNAL(newMessage(QString,QString)),
@@ -61,12 +62,54 @@ ChatDialog::ChatDialog(QWidget *parent)
 
 }
 
-void ChatDialog::appendMessage(const QString &from, const QString &message)
+
+// It is not recommended to create a singleton of Qml Singleton registered
+// object but we could not found a better way to let us access ClientNetworkMessages
+// on the C++ side. All our test shows that it works.
+// Using the singleton after the QmlEngine has been destroyed is forbidden!
+ClientNetworkMessages* ClientNetworkMessages::getInstance()
+{
+    if (!_instance)
+        _instance = new ClientNetworkMessages;
+    return _instance;
+}
+
+QObject *ClientNetworkMessages::systeminfoProvider(QQmlEngine *engine,
+        QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return getInstance();
+}
+
+void ClientNetworkMessages::init()
+{
+    qmlRegisterSingletonType<ClientNetworkMessages>("GCompris", 1, 0,
+            "ClientNetworkMessages",
+            systeminfoProvider);
+}
+
+
+void ClientNetworkMessages::appendMessage(const QString &from, const QString &message)
 {
     if (from.isEmpty() || message.isEmpty())
         return;
 
    qDebug() << "Message:" << message;
+
+
 }
+
+void ClientNetworkMessages::sendMessage()
+{
+
+
+   qDebug() << "Message:" << "mon message";
+
+
+}
+
+
 
 
