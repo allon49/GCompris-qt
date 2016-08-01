@@ -43,6 +43,9 @@
 #include "ActivityInfoTree.h"
 #include "File.h"
 #include "DownloadManager.h"
+#include "ClientNetworkMessages.h"
+
+
 
 bool loadAndroidTranslation(QTranslator &translator, const QString &locale)
 {

@@ -56,6 +56,12 @@
 #include <QQmlEngine>
 #include <QJSEngine>
 
+
+#include <QQmlPropertyMap>
+
+#include <QtGlobal>
+
+
 #include "client.h"
 
 
@@ -81,12 +87,14 @@ public:
             QJSEngine *scriptEngine);
     static ClientNetworkMessages* getInstance();
 
-    virtual ~ClientNetworkMessages();
+    Q_INVOKABLE void sendMessage();
+
+   // virtual ~ClientNetworkMessages();
 
 public slots:
     void appendMessage(const QString &from, const QString &message);
 
-    Q_INVOKABLE void sendMessage();
+
 
 
 
