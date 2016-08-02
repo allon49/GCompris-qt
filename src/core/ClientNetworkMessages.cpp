@@ -62,6 +62,11 @@ ClientNetworkMessages::ClientNetworkMessages(): QObject()
 
 }
 
+ClientNetworkMessages::~ClientNetworkMessages()
+{
+    _instance = 0;
+}
+
 
 // It is not recommended to create a singleton of Qml Singleton registered
 // object but we could not found a better way to let us access ClientNetworkMessages

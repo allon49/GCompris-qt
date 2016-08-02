@@ -22,7 +22,6 @@
 import QtQuick 2.1
 
 import "../../core"
-import "qrc:/gcompris/src/core/core.js" as Core
 import "network.js" as Activity
 
 ActivityBase {
@@ -69,8 +68,12 @@ ActivityBase {
 
             MouseArea {
                 width:100; height:100
-                onClicked: console.log("area clicked")
-                ClientNetworkMessages.
+                onClicked: {
+
+                    console.log("area clicked1")
+                    console.log("area clicked2")
+                    ClientNetworkMessages.sendMessage()
+                }
             }
         }
 

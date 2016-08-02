@@ -48,8 +48,8 @@
 **
 ****************************************************************************/
 
-#ifndef CHATDIALOG_H
-#define CHATDIALOG_H
+#ifndef CLIENTNETWORKMESSAGES_H
+#define CLIENTNETWORKMESSAGES_H
 
 #include <QObject>
 #include <QtQml>
@@ -89,7 +89,7 @@ public:
 
     Q_INVOKABLE void sendMessage();
 
-   // virtual ~ClientNetworkMessages();
+    virtual ~ClientNetworkMessages();
 
 public slots:
     void appendMessage(const QString &from, const QString &message);
