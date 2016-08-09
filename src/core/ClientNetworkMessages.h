@@ -70,14 +70,27 @@ class ClientNetworkMessages : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString username READ getCurrentUsername WRITE setCurrentUsername NOTIFY currentUsernameChanged)
+
 
 private:
     Client client;
     ClientNetworkMessages();  // prohibit external creation, we are a singleton!
     static ClientNetworkMessages* _instance;  // singleton instance
 
+    QString m_currentUsername;
+
 
 public:
+
+
+    QObject * s_qml_text_edit = 0;
+
+    void appendMsgToTextEdit();
+
+
+    void setCurrentUsername(QString &currentUsername);
+    QString getCurrentUsername() const;
 
     /**
      * Registers ClientNetworkMessages singleton in the QML engine.
@@ -87,7 +100,7 @@ public:
             QJSEngine *scriptEngine);
     static ClientNetworkMessages* getInstance();
 
-    Q_INVOKABLE void sendMessage();
+    Q_INVOKABLE void sendMessage(QString message);
 
     virtual ~ClientNetworkMessages();
 
@@ -95,7 +108,8 @@ public slots:
     void appendMessage(const QString &from, const QString &message);
 
 
-
+signals:
+    void currentUsernameChanged();
 
 
 

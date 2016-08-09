@@ -49,8 +49,14 @@
 ****************************************************************************/
 
 #include <QtWidgets>
+#include <QString>
+#include <QQmlComponent>
+#include <QQmlEngine>
+
 
 #include "ClientNetworkMessages.h"
+
+
 
 ClientNetworkMessages* ClientNetworkMessages::_instance = 0;
 
@@ -59,6 +65,8 @@ ClientNetworkMessages::ClientNetworkMessages(): QObject()
 
     connect(&client, SIGNAL(newMessage(QString,QString)),
             this, SLOT(appendMessage(QString,QString)));
+
+    m_currentUsername = "Mathilda";
 
 }
 
@@ -93,6 +101,36 @@ void ClientNetworkMessages::init()
     qmlRegisterSingletonType<ClientNetworkMessages>("GCompris", 1, 0,
             "ClientNetworkMessages",
             systeminfoProvider);
+
+
+
+
+    //here I create the engine then the component like explained here
+    //http://doc.qt.io/qt-5/qtqml-cppintegration-interactqmlfromcpp.html#invoking-qml-methods
+
+
+    QQmlEngine engine;
+    //QQmlComponent component(&engine, "qrc:/gcompris/src/activities/networkclient/Networkclient.qml");
+    QQmlComponent component(&engine, "/home/charruau/Development/GComprisNetwork/GCompris-qt/src/activities/networkclient/Networkclient.qml");
+
+
+    //then I create the tree node as form of object
+    QObject *object = component.create();
+
+    //I create the pointer which will sort the position of textEdit objectName (described in Networkclient.qml line 104.
+    QObject *s_qml_text_edit;
+    //I find a child called textEdit within the tree representing the qml content, I do that recursively because textEdit is not under root
+    s_qml_text_edit = object->findChild<QObject*>("textEdit",Qt::FindChildrenRecursively);
+
+
+
+    QVariant msg = "Hello from C++";
+
+    //I call the method append() part of textEdit
+    QMetaObject::invokeMethod(s_qml_text_edit, "append", Q_ARG(QVariant, msg));
+   // s_qml_text_edit->x = 10;
+
+    delete object;
 }
 
 
@@ -101,19 +139,47 @@ void ClientNetworkMessages::appendMessage(const QString &from, const QString &me
     if (from.isEmpty() || message.isEmpty())
         return;
 
-   qDebug() << "Message:" << message;
+    if (message.indexOf("controle::") == 0)
+       qDebug() << "Control::" << message;
+    else if (message.indexOf("client_data::") == 0)
+       qDebug() << "client_data::" << message;
+    else
+        qDebug() << "invalid data::" << message;
+
+
 
 
 }
 
-void ClientNetworkMessages::sendMessage()
+void ClientNetworkMessages::sendMessage(QString message)
 {
 
 
-   qDebug() << "Message:" << "mon message";
-
+   qDebug() << "Message:" << message;
+   client.sendMessage(message);
 
 }
+
+void ClientNetworkMessages::setCurrentUsername(QString &currentUsername)
+{
+    m_currentUsername = currentUsername;
+    emit currentUsernameChanged();
+}
+
+QString ClientNetworkMessages::getCurrentUsername() const
+{
+    return m_currentUsername;
+}
+
+
+
+void appendMsgToTextEdit()
+{
+
+}
+
+
+
 
 
 

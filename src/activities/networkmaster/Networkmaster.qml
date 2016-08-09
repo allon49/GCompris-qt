@@ -1,4 +1,4 @@
-/* GCompris - network.qml
+/* GCompris - networkmaster.qml
  *
  * Copyright (C) 2016 YOUR NAME <xx@yy.org>
  *
@@ -21,9 +21,10 @@
  */
 import QtQuick 2.1
 import GCompris 1.0
+import QtQuick.Controls 1.4
 
 import "../../core"
-import "network.js" as Activity
+import "networkmaster.js" as Activity
 
 ActivityBase {
     id: activity
@@ -57,20 +58,40 @@ ActivityBase {
 
         GCText {
             anchors.centerIn: parent
-            text: "network activity"
+            text: "networkmaster activity"
             fontSize: largeSize
         }
 
+        Button {
+            id: button1
+       //     width: 100; height: 100
+            x: 100
+            y: 100
+            text: "request_client_peering"
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {
+
+                    console.log("area clicked1")
+                    console.log("area clicked2")
+                    ClientNetworkMessages.sendMessage("master_control:::request_client_peering")
+                   //   ClientNetworkMessages.sendMessage()
+                }
+            }
+        }
 
 
-        Rectangle {
+    /*    Button {
             id: button1
             width: 100; height: 100
             x: 100
             y: 100
 
             MouseArea {
-                width:100; height:100
+                width: parent100; height:100
                 onClicked: {
 
                     console.log("area clicked1")
@@ -78,7 +99,8 @@ ActivityBase {
                     ClientNetworkMessages.sendMessage()
                 }
             }
-        }
+        }*/
+
 
         DialogHelp {
             id: dialogHelp

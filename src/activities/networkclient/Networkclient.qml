@@ -1,4 +1,4 @@
-/* GCompris - network.qml
+/* GCompris - networkclient.qml
  *
  * Copyright (C) 2016 YOUR NAME <xx@yy.org>
  *
@@ -20,10 +20,11 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.1
+import GCompris 1.0
+import QtQuick.Controls 1.4
 
 import "../../core"
-import "qrc:/gcompris/src/core/core.js" as Core
-import "network.js" as Activity
+import "networkclient.js" as Activity
 
 ActivityBase {
     id: activity
@@ -57,22 +58,61 @@ ActivityBase {
 
         GCText {
             anchors.centerIn: parent
-            text: "network activity"
+            text: "networkclient activity"
             fontSize: largeSize
         }
 
-        Rectangle {
-            id: button1
-            width: 100; height: 100
-            x: 100
-            y: 100
 
-            MouseArea {
-                width:100; height:100
-                onClicked: console.log("area clicked")
-                ClientNetworkMessages.sendMessage()
-            }
+        GCText {
+            anchors.top: parent.width * 0.1
+            anchors.left: parent.height * 0.1
+            text: ClientNetworkMessages.username
+            fontSize: largeSize
         }
+
+
+        Rectangle {
+            x: parent.width * 0.5
+            y: parent.height * 0.5
+            width: 300; height: 200;
+            anchors.top: parent.anchors.top
+            anchors.left: parent.anchors.left
+
+            Flickable {
+                 id: flick
+                 anchors.top: parent.anchors.top
+                 anchors.left: parent.anchors.left
+
+                 width: 300; height: 200;
+                 contentWidth: edit.paintedWidth
+                 contentHeight: edit.paintedHeight
+                 clip: true
+
+                 function ensureVisible(r)
+                 {
+                     if (contentX >= r.x)
+                         contentX = r.x;
+                     else if (contentX+width <= r.x+r.width)
+                         contentX = r.x+r.width-width;
+                     if (contentY >= r.y)
+                         contentY = r.y;
+                     else if (contentY+height <= r.y+r.height)
+                         contentY = r.y+r.height-height;
+                 }
+
+                 TextEdit {
+                     objectName: "textEdit"
+                     id: edit
+                     width: flick.width
+                     height: flick.height
+                     focus: true
+                     wrapMode: TextEdit.Wrap
+                     onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+                 }
+             }
+
+        }
+
 
         DialogHelp {
             id: dialogHelp

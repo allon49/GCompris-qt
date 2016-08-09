@@ -99,6 +99,8 @@ money_back_cents
 money_cents
 mosaic
 network
+networkclient
+networkmaster
 numbers-odd-even
 paintings
 penalty
