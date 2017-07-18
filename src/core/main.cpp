@@ -35,6 +35,9 @@
 #include "File.h"
 #include "Directory.h"
 #include "DownloadManager.h"
+#include "RtfDocumentHandler.h"
+
+
 
 bool loadAndroidTranslation(QTranslator &translator, const QString &locale)
 {
@@ -178,6 +181,7 @@ int main(int argc, char *argv[])
     File::init();
     Directory::init();
     DownloadManager::init();
+    DocumentHandler::init();
 
     // Tell media players to stop playing, it's GCompris time
     ApplicationInfo::getInstance()->requestAudioFocus();

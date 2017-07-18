@@ -27,6 +27,8 @@ set(gcompris_SRCS
    Directory.h
    DownloadManager.cpp
    DownloadManager.h
+   RtfDocumentHandler.cpp
+   RtfDocumentHandler.h   
 )
 
 qt5_wrap_cpp(gcompris_MOC ${gcompris_SRCS})
