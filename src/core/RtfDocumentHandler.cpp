@@ -93,8 +93,9 @@ void DocumentHandler::setFileUrl(const QUrl &arg)
     if (m_fileUrl != arg) {
         m_fileUrl = arg;
         QString fileName = QQmlFile::urlToLocalFileOrQrc(arg);
-        qDebug() << "test1 " << fileName;
 
+        qDebug() << "test1 " << fileName;
+        fileName = "/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/";
         if (QFile::exists(fileName)) {
             qDebug()  << "test2 " << fileName;
             QFile file(fileName);
