@@ -69,14 +69,26 @@ ActivityBase {
             property var answersPlacesInserted: Boolean
             property var resultMarkStrInserted: Boolean
             property var answerFieldsPrepared: Boolean
+            property var originalText: String
 
+            width: parent.width - (parent.width/5)
 
+            anchors {
+                id: textAreaDestinationAnchors
+                left: parent.left
+                top: parent.top
+                bottom: bar.top
+                margins: 50
+            }
+
+            textFormat: Qt.RichText
 
             Component.onCompleted: {
                 displayAnswerMarks = false
                 answersPlacesInserted = false
                 resultMarkStrInserted = false
                 answerFieldsPrepared = false
+                startExercice()
             }
 
 
@@ -385,21 +397,8 @@ ActivityBase {
             }
 
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                bottom: bar.top
-                margins: 10
-            }
 
 
-            //frameVisible: false
-         /*   width: parent.width
-            height: parent.height/3
-            anchors.top: textArea.bottom*/
-            text: destDocument.text
-            textFormat: Qt.RichText
             //Component.onCompleted: forceActiveFocus()
 
 
@@ -570,67 +569,125 @@ ActivityBase {
             color: "black"
         }*/
 
-  /*      DocumentHandler {
-            id: document
-            target: textAreaDestination
-            cursorPosition: textArea.cursorPosition
-            selectionStart: textArea.selectionStart
-            selectionEnd: textArea.selectionEnd
-            textColor: colorDialog.color
-            Component.onCompleted: document.fileUrl = "qrc:/example.html"
-            onFontSizeChanged: {
-                fontSizeSpinBox.valueGuard = false
-                fontSizeSpinBox.value = document.fontSize
-                fontSizeSpinBox.valueGuard = true
-            }
-            onFontFamilyChanged: {
-                var index = Qt.fontFamilies().indexOf(document.fontFamily)
-                if (index == -1) {
-                    fontFamilyComboBox.currentIndex = 0
-                    fontFamilyComboBox.special = true
-                } else {
-                    fontFamilyComboBox.currentIndex = index
-                    fontFamilyComboBox.special = false
-                }
-            }
-            onError: {
-                errorDialog.text = message
-                errorDialog.visible = true
+
+        TextArea {
+            Accessible.name: "document"
+            id: textArea
+
+
+
+            width: parent.width - (parent.width/3)
+            height: parent.height/3 - 20
+            x: parent.width/3
+            y: parent.height - (parent.height/3)
+
+            //visible: false
+
+            baseUrl: "qrc:/"
+
+            textFormat: Qt.RichText
+         //   Component.onCompleted: forceActiveFocus()
+
+            Component.onCompleted: {
+                textArea.text = destDocument.text
             }
 
-        }*/
+            onTextChanged: {
+                textAreaDestination.startExercice()
+            }
+
+
+        }
+
+
 
         DocumentHandler {
             id: destDocument
+
             target: textAreaDestination
             cursorPosition: textAreaDestination.cursorPosition
             selectionStart: textAreaDestination.selectionStart
             selectionEnd: textAreaDestination.selectionEnd
           //  textColor: colorDialog.color
             Component.onCompleted: {
-                destDocument.fileUrl = "qrc:/gcompris/src/activities/multiple-choice-questions/example.html"
-                console.log("yyy: " + destDocument.fileUrl)
+                destDocument.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
+
             }
-     //       onFontSizeChanged: {
-     //           fontSizeSpinBox.valueGuard = false
-     //           fontSizeSpinBox.value = destDocument.fontSize
-     //           fontSizeSpinBox.valueGuard = true
-     //       }
-     /*       onFontFamilyChanged: {
-                var index = Qt.fontFamilies().indexOf(destDocument.fontFamily)
-                if (index == -1) {
-                    fontFamilyComboBox.currentIndex = 0
-                    fontFamilyComboBox.special = true
-                } else {
-                    fontFamilyComboBox.currentIndex = index
-                    fontFamilyComboBox.special = false
-                }
-            }*/
             onError: {
                 errorDialog.text = "tttt" //message
                 errorDialog.visible = true
             }
+         }
 
+        Item {
+            id: editorTools
+            width: 252
+            height: 252
+            property variant colorArray: ["#00bde3", "#67c111", "#ea7025"]
+
+            x: textAreaDestination.width + textAreaDestinationAnchors.margins + 10
+            y: textAreaDestinationAnchors.margins + scoreScreen.height + 10
+            Grid{
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 4
+                Repeater {
+                    model: 16
+                    Rectangle {
+                        width: 42; height: 56
+                        property int colorIndex: Math.floor(Math.random()*3)
+                        color: editorTools.colorArray[colorIndex]
+                        border.color: Qt.lighter(color)
+                        Text {
+                            anchors.centerIn: parent
+                            color: "#f0f0f0"
+                            text: "Cell " + index
+                        }
+                    }
+                }
+            }
+        }
+
+        ListModel {
+            id: keyWordList
+            ListElement {
+                name: "Bill Smith"
+                number: "555 3264"
+            }
+            ListElement {
+                name: "John Brown"
+                number: "555 8426"
+            }
+            ListElement {
+                name: "Sam Wise"
+                number: "555 0473"
+            }
+        }
+
+
+        Rectangle {
+            id: keywordsListView
+
+            width: 180; height: 200
+
+            Component {
+                id: contactDelegate
+                Item {
+                    width: 180; height: 40
+                    Column {
+                        Text { text: '<b>Name:</b> ' + name }
+                        Text { text: '<b>Number:</b> ' + number }
+                    }
+                }
+            }
+
+            ListView {
+                anchors.fill: parent
+                model: keyWordList
+                delegate: contactDelegate
+                highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+                focus: true
+            }
         }
 
 
@@ -642,7 +699,7 @@ ActivityBase {
 
         Bar {
             id: bar
-            content: BarEnumContent { value: help | home | level }
+            content: BarEnumContent { value: help | home}
             onHelpClicked: {
                 displayDialog(dialogHelp)
             }
@@ -651,10 +708,38 @@ ActivityBase {
             onHomeClicked: activity.home()
         }
 
+        BarButton {
+          id: okButton
+          source: "qrc:/gcompris/src/core/resource/bar_ok.svg"
+          sourceSize.width: 66 * bar.barZoom
+          anchors {
+              right: parent.right
+              rightMargin: 10 * ApplicationInfo.ratio
+              bottom: parent.bottom
+              bottomMargin: parent.width > 420 * ApplicationInfo.ratio ? 10 : bar.height
+          }
+          width: 66 * ApplicationInfo.ratio
+          height: 66 * ApplicationInfo.ratio
+          onClicked: {
+            textAreaDestination.checkAnswers()
+          }
+        }
+
         Bonus {
             id: bonus
             Component.onCompleted: win.connect(Activity.nextLevel)
         }
+
+        Text {
+            id: scoreScreen
+            x: textAreaDestination.width + textAreaDestinationAnchors.margins + 10
+            y: textAreaDestinationAnchors.margins
+
+            font.family: "Helvetica"
+            font.pointSize: 24
+            color: "black"
+        }
+
     }
 
 }
