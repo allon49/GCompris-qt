@@ -75,6 +75,8 @@ class DocumentHandler : public QObject
 
     Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor NOTIFY textColorChanged)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+    Q_PROPERTY(QString exerciceFilename READ exerciceFilename)
+
     Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment NOTIFY alignmentChanged)
 
     Q_PROPERTY(bool bold READ bold WRITE setBold NOTIFY boldChanged)
@@ -90,10 +92,14 @@ class DocumentHandler : public QObject
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QString documentTitle READ documentTitle WRITE setDocumentTitle NOTIFY documentTitleChanged)
 
+    Q_INVOKABLE void setExerciceFilename();
+
+
 public:
     DocumentHandler();
 
     static void init();
+
 
 
     QQuickItem *target() { return m_target; }
@@ -110,6 +116,8 @@ public:
 
     QString fontFamily() const;
     qreal stringWidth();
+    QString exerciceFilename();
+    QString exerciceKeywords();
 
 
     QColor textColor() const;
@@ -136,6 +144,7 @@ public Q_SLOTS:
     void setTextColor(const QColor &arg);
     void setFontFamily(const QString &arg);
 
+
     void parseDocument();
 
     void setFileUrl(const QUrl &arg);
@@ -153,6 +162,7 @@ Q_SIGNALS:
     void fontFamilyChanged();
     void textColorChanged();
     void alignmentChanged();
+    void exerciceFilenameChanged();
 
     void boldChanged();
     void italicChanged();
@@ -185,6 +195,8 @@ private:
     QUrl m_fileUrl;
     QString m_text;
     QString m_documentTitle;
+    QString m_exerciceKeywords;
+    QString m_exerciceFilename;
 };
 
 #endif

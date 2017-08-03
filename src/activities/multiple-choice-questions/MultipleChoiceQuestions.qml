@@ -722,6 +722,7 @@ ActivityBase {
           height: 66 * ApplicationInfo.ratio
           onClicked: {
             textAreaDestination.checkAnswers()
+            destDocument.setExerciceFilename()
           }
         }
 

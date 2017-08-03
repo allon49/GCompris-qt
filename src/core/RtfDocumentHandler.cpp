@@ -87,6 +87,7 @@ void DocumentHandler::setTarget(QQuickItem *target)
     emit targetChanged();
 }
 
+
 void DocumentHandler::setFileUrl(const QUrl &arg)
 {
     qDebug() << "testx" << arg;
@@ -324,6 +325,19 @@ QColor DocumentHandler::textColor() const
     return format.foreground().color();
 }
 
+void DocumentHandler::setExerciceFilename()
+{
+    qDebug() << "setExerciceFilename()";
+    m_doc->find("characters",0,0);
+    emit exerciceFilenameChanged();
+}
+
+
+QString DocumentHandler::exerciceFilename()
+{
+       return m_exerciceFilename;
+}
+
 void DocumentHandler::setTextColor(const QColor &c)
 {
     QTextCursor cursor = textCursor();
@@ -343,6 +357,7 @@ QString DocumentHandler::fontFamily() const
     QTextCharFormat format = cursor.charFormat();
     return format.font().family();
 }
+
 
 void DocumentHandler::setFontFamily(const QString &arg)
 {
