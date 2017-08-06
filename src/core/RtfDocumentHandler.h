@@ -52,6 +52,7 @@
 #define DOCUMENTHANDLER_H
 
 #include <QQuickTextDocument>
+#include <QObject>
 
 #include <QtGui/QTextCharFormat>
 #include <QtCore/QTextCodec>
@@ -92,7 +93,9 @@ class DocumentHandler : public QObject
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QString documentTitle READ documentTitle WRITE setDocumentTitle NOTIFY documentTitleChanged)
 
-    Q_INVOKABLE void setExerciceFilename();
+
+
+
 
 
 public:
@@ -100,7 +103,7 @@ public:
 
     static void init();
 
-
+    Q_INVOKABLE void setExerciceFilename();
 
     QQuickItem *target() { return m_target; }
 

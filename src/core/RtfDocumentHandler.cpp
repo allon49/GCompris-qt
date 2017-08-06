@@ -327,11 +327,17 @@ QColor DocumentHandler::textColor() const
 
 void DocumentHandler::setExerciceFilename()
 {
-    qDebug() << "setExerciceFilename()";
-    m_doc->find("characters",0,0);
+    QTextCursor cursor = textCursor();
+    qDebug() << "-----------------------------------setExerciceFilename()";
+    cursor = m_doc->find("editor",cursor,0);
+    qDebug() << "selected text: " << cursor.selectedText();
     emit exerciceFilenameChanged();
+
 }
 
+
+/*[filename=cod.exo]
+[keywords=ce2;grammaire;COD]      */
 
 QString DocumentHandler::exerciceFilename()
 {

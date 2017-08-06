@@ -27,6 +27,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.3
 import GCompris 1.0
 
 
@@ -575,7 +576,6 @@ ActivityBase {
             id: textArea
 
 
-
             width: parent.width - (parent.width/3)
             height: parent.height/3 - 20
             x: parent.width/3
@@ -619,34 +619,232 @@ ActivityBase {
             }
          }
 
-        Item {
-            id: editorTools
-            width: 252
-            height: 252
-            property variant colorArray: ["#00bde3", "#67c111", "#ea7025"]
+        Action {
+            id: cutAction
+            text: "Cut"
+            shortcut: "ctrl+x"
+            iconSource: "images/editcut.png"
+            iconName: "edit-cut"
+            onTriggered: textArea.cut()
+        }
 
-            x: textAreaDestination.width + textAreaDestinationAnchors.margins + 10
-            y: textAreaDestinationAnchors.margins + scoreScreen.height + 10
-            Grid{
-                anchors.fill: parent
-                anchors.margins: 8
-                spacing: 4
-                Repeater {
-                    model: 16
-                    Rectangle {
-                        width: 42; height: 56
-                        property int colorIndex: Math.floor(Math.random()*3)
-                        color: editorTools.colorArray[colorIndex]
-                        border.color: Qt.lighter(color)
-                        Text {
-                            anchors.centerIn: parent
-                            color: "#f0f0f0"
-                            text: "Cell " + index
-                        }
-                    }
-                }
+        Action {
+            id: copyAction
+            text: "Copy"
+            shortcut: "Ctrl+C"
+            iconSource: "images/editcopy.png"
+            iconName: "edit-copy"
+            onTriggered: textArea.copy()
+        }
+
+        Action {
+            id: pasteAction
+            text: "Paste"
+            shortcut: "ctrl+v"
+            iconSource: "qrc:images/editpaste.png"
+            iconName: "edit-paste"
+            onTriggered: textArea.paste()
+        }
+
+        Action {
+            id: alignLeftAction
+            text: "&Left"
+            iconSource: "images/textleft.png"
+            iconName: "format-justify-left"
+            shortcut: "ctrl+l"
+            onTriggered: document.alignment = Qt.AlignLeft
+            checkable: true
+            checked: document.alignment == Qt.AlignLeft
+        }
+        Action {
+            id: alignCenterAction
+            text: "C&enter"
+            iconSource: "images/textcenter.png"
+            iconName: "format-justify-center"
+            onTriggered: document.alignment = Qt.AlignHCenter
+            checkable: true
+            checked: document.alignment == Qt.AlignHCenter
+        }
+        Action {
+            id: alignRightAction
+            text: "&Right"
+            iconSource: "images/textright.png"
+            iconName: "format-justify-right"
+            onTriggered: document.alignment = Qt.AlignRight
+            checkable: true
+            checked: document.alignment == Qt.AlignRight
+        }
+        Action {
+            id: alignJustifyAction
+            text: "&Justify"
+            iconSource: "images/textjustify.png"
+            iconName: "format-justify-fill"
+            onTriggered: document.alignment = Qt.AlignJustify
+            checkable: true
+            checked: document.alignment == Qt.AlignJustify
+        }
+
+        Action {
+            id: boldAction
+            text: "&Bold"
+            iconSource: "images/textbold.png"
+            iconName: "format-text-bold"
+            onTriggered: document.bold = !document.bold
+            checkable: true
+            checked: document.bold
+        }
+
+        Action {
+            id: italicAction
+            text: "&Italic"
+            iconSource: "images/textitalic.png"
+            iconName: "format-text-italic"
+            onTriggered: document.italic = !document.italic
+            checkable: true
+            checked: document.italic
+        }
+        Action {
+            id: underlineAction
+            text: "&Underline"
+            iconSource: "images/textunder.png"
+            iconName: "format-text-underline"
+            onTriggered: document.underline = !document.underline
+            checkable: true
+            checked: document.underline
+        }
+
+
+        Action {
+            id: prepareAnswerFields
+            text: "prepareAnswerFields"
+            iconSource: "images/createmultianswerchoices.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.prepareAnswerFields()
+            //    textAreaDestination.displayAnswerChoices()
             }
         }
+
+        Action {
+            id: insertSpaceForMultipleChoiceBoxes
+            text: "insertSpaceForMultipleChoiceBoxes"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.insertSpaceForMultipleChoiceBoxes()
+            }
+        }
+
+        Action {
+            id: deleteAnswerChoices
+            text: "deleteAnswerChoices"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.deleteAnswerChoices()
+            }
+        }
+
+        Action {
+            id: insertMultipleChoiceBoxes
+            text: "insertMultipleChoiceBoxes"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.insertMultipleChoiceBoxes()
+            }
+        }
+
+        Action {
+            id: deleteMultipleChoiceBoxes
+            text: "deleteMultipleChoiceBoxes"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.deleteMultipleChoiceBoxes()
+            }
+        }
+
+        Action {
+            id: insertSuccessAndFailMark
+            text: "insertSuccessAndFailMark"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.insertSuccessAndFailMark(true, 2)
+            }
+        }
+
+        Action {
+            id: checkAnswers
+            text: "checkAnswers"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.checkAnswers()
+            }
+        }
+
+        Action {
+            id: deleteSuccessAndFailMark
+            text: "deleteSuccessAndFailMark"
+            iconSource: "images/ok.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.deleteSuccessAndFailMark()
+            }
+        }
+
+        Action {
+            id: startExercice
+            text: "startExercice"
+            iconSource: "images/arrow-right.png"
+            iconName: "xxx"
+            onTriggered: {
+                textAreaDestination.startExercice()
+            }
+        }
+
+
+        ToolBar {
+            id: activityToolbar
+            width: 252
+            height: 252
+            x: textAreaDestination.width + textAreaDestinationAnchors.margins + 10
+            y: textAreaDestinationAnchors.margins + scoreScreen.height + 10
+
+            GridLayout {
+                id: grid
+                columns: 2
+
+                ToolButton { action: fileOpenAction }
+
+
+
+                ToolButton { action: copyAction }
+                ToolButton { action: cutAction }
+                ToolButton { action: pasteAction }
+
+
+
+                ToolButton { action: boldAction }
+                ToolButton { action: italicAction }
+                ToolButton { action: underlineAction }
+
+
+
+                ToolButton { action: alignLeftAction }
+                ToolButton { action: alignCenterAction }
+                ToolButton { action: alignRightAction }
+                ToolButton { action: alignJustifyAction }
+
+
+
+                ToolButton { action: alignJustifyAction }
+            }
+        }
+
+
 
         ListModel {
             id: keyWordList
@@ -721,7 +919,7 @@ ActivityBase {
           width: 66 * ApplicationInfo.ratio
           height: 66 * ApplicationInfo.ratio
           onClicked: {
-            textAreaDestination.checkAnswers()
+            //rtextAreaDestination.checkAnswers()
             destDocument.setExerciceFilename()
           }
         }
