@@ -571,6 +571,8 @@ ActivityBase {
         }*/
 
 
+
+
         TextArea {
             Accessible.name: "document"
             id: textArea
@@ -584,13 +586,13 @@ ActivityBase {
             //visible: false
 
             baseUrl: "qrc:/"
-
+            text: document.text
             textFormat: Qt.RichText
          //   Component.onCompleted: forceActiveFocus()
 
-            Component.onCompleted: {
+        /*    Component.onCompleted: {
                 textArea.text = destDocument.text
-            }
+            }*/
 
             onTextChanged: {
                 textAreaDestination.startExercice()
@@ -598,6 +600,42 @@ ActivityBase {
 
 
         }
+
+
+
+        DocumentHandler {
+            id: document
+
+            target: textArea
+            cursorPosition: textArea.cursorPosition
+            selectionStart: textArea.selectionStart
+            selectionEnd: textArea.selectionEnd
+            textColor: colorDialog.color
+            Component.onCompleted: document.fileUrl = "qrc:/example.html"
+            onFontSizeChanged: {
+                fontSizeSpinBox.valueGuard = false
+                fontSizeSpinBox.value = document.fontSize
+                fontSizeSpinBox.valueGuard = true
+            }
+            onFontFamilyChanged: {
+                var index = Qt.fontFamilies().indexOf(document.fontFamily)
+                if (index == -1) {
+                    fontFamilyComboBox.currentIndex = 0
+                    fontFamilyComboBox.special = true
+                } else {
+                    fontFamilyComboBox.currentIndex = index
+                    fontFamilyComboBox.special = false
+                }
+            }
+            onError: {
+                errorDialog.text = message
+                errorDialog.visible = true
+            }
+
+        }
+
+
+
 
 
 
@@ -647,6 +685,16 @@ ActivityBase {
         }
 
         Action {
+            id: boldAction
+            text: "&Bold"
+            iconSource: "images/textbold.png"
+            iconName: "format-text-bold"
+            onTriggered: document.bold = !document.bold
+            checkable: true
+            checked: document.bold
+        }
+
+      /*  Action {
             id: alignLeftAction
             text: "&Left"
             iconSource: "images/textleft.png"
@@ -661,9 +709,9 @@ ActivityBase {
             text: "C&enter"
             iconSource: "images/textcenter.png"
             iconName: "format-justify-center"
-            onTriggered: document.alignment = Qt.AlignHCenter
+            onTriggered: textArea.alignment = Qt.AlignHCenter
             checkable: true
-            checked: document.alignment == Qt.AlignHCenter
+            checked: textArea.alignment == Qt.AlignHCenter
         }
         Action {
             id: alignRightAction
@@ -684,15 +732,7 @@ ActivityBase {
             checked: document.alignment == Qt.AlignJustify
         }
 
-        Action {
-            id: boldAction
-            text: "&Bold"
-            iconSource: "images/textbold.png"
-            iconName: "format-text-bold"
-            onTriggered: document.bold = !document.bold
-            checkable: true
-            checked: document.bold
-        }
+
 
         Action {
             id: italicAction
@@ -711,7 +751,7 @@ ActivityBase {
             onTriggered: document.underline = !document.underline
             checkable: true
             checked: document.underline
-        }
+        }*/
 
 
         Action {
