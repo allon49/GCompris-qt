@@ -64,6 +64,7 @@ DocumentHandler::DocumentHandler()
     , m_selectionStart(0)
     , m_selectionEnd(0)
 {
+    qDebug() << "execute constructor";
 }
 
 void DocumentHandler::init()
@@ -73,6 +74,7 @@ void DocumentHandler::init()
 
 void DocumentHandler::setTarget(QQuickItem *target)
 {
+    qDebug()  << "settarget1";
     m_doc = 0;
     m_target = target;
     if (!m_target)
@@ -80,8 +82,10 @@ void DocumentHandler::setTarget(QQuickItem *target)
 
     QVariant doc = m_target->property("textDocument");
     if (doc.canConvert<QQuickTextDocument*>()) {
+        qDebug()  << "settarget2";
         QQuickTextDocument *qqdoc = doc.value<QQuickTextDocument*>();
         if (qqdoc)
+            qDebug()  << "settarget3";
             m_doc = qqdoc->textDocument();
     }
     emit targetChanged();
@@ -90,13 +94,13 @@ void DocumentHandler::setTarget(QQuickItem *target)
 
 void DocumentHandler::setFileUrl(const QUrl &arg)
 {
-    qDebug() << "testx" << arg;
+    qDebug() << "setFileUrl: " << arg;
     if (m_fileUrl != arg) {
         m_fileUrl = arg;
         QString fileName = QQmlFile::urlToLocalFileOrQrc(arg);
 
         if (QFile::exists(fileName)) {
-            qDebug()  << "test2 " << fileName;
+            qDebug()  << "setFileUrl file exists " << fileName;
             QFile file(fileName);
             if (file.open(QFile::ReadOnly)) {
                 QByteArray data = file.readAll();
@@ -135,15 +139,13 @@ void DocumentHandler::setDocumentTitle(QString arg)
 void DocumentHandler::setText(const QString &arg)
 {
     if (m_text != arg) {
-        m_text = arg+ "111";
+        m_text = arg;
         emit textChanged();
     }
 }
 
 void DocumentHandler::parseDocument()
 {
-    m_text = m_text + "222";
-         //   emit textChanged();
 }
 
 
@@ -198,9 +200,11 @@ void DocumentHandler::reset()
 
 QTextCursor DocumentHandler::textCursor() const
 {
+    qDebug() << "TextCursor function start: " << m_selectionStart;
+
     QTextCursor cursor = QTextCursor(m_doc);
-    //qDebug() << "selection_start: " << m_selectionStart;
-    //qDebug() << "selection_end: " << m_selectionEnd;
+    qDebug() << "selection_start: " << m_selectionStart;
+    qDebug() << "selection_end: " << m_selectionEnd;
     if (m_selectionStart != m_selectionEnd) {
         cursor.setPosition(m_selectionStart);
         cursor.setPosition(m_selectionEnd, QTextCursor::KeepAnchor);
@@ -249,9 +253,14 @@ Qt::Alignment DocumentHandler::alignment() const
 
 bool DocumentHandler::bold() const
 {
+    qDebug() << "bold start";
     QTextCursor cursor = textCursor();
-    if (cursor.isNull())
+    qDebug() << "bold after cursor";
+    if (cursor.isNull()){
+        qDebug() << "bold not working";
         return false;
+    }
+    qDebug() << "bold worked";
     return textCursor().charFormat().fontWeight() == QFont::Bold;
 }
 
@@ -282,7 +291,7 @@ void DocumentHandler::setBold(bool arg)
 void DocumentHandler::setItalic(bool arg)
 {
     QTextCharFormat fmt;
-    //fmt.setFontItalic(arg);
+    fmt.setFontItalic(arg);
     fmt.setForeground(Qt::red); // FontItalic(arg);
     mergeFormatOnWordOrSelection(fmt);
     emit italicChanged();

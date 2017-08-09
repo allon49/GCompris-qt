@@ -103,11 +103,15 @@ public:
 
     static void init();
 
-    Q_INVOKABLE void setExerciceFilename();
+
 
     QQuickItem *target() { return m_target; }
 
+
+
     void setTarget(QQuickItem *target);
+
+    Q_INVOKABLE void setExerciceFilename();
 
     void setCursorPosition(int position);
     void setSelectionStart(int position);

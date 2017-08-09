@@ -29,6 +29,7 @@ import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
 import GCompris 1.0
+//import QtQml 2.2
 
 
 ActivityBase {
@@ -89,7 +90,7 @@ ActivityBase {
                 answersPlacesInserted = false
                 resultMarkStrInserted = false
                 answerFieldsPrepared = false
-                startExercice()
+                //startExercice()
             }
 
 
@@ -403,10 +404,10 @@ ActivityBase {
             //Component.onCompleted: forceActiveFocus()
 
 
-          /*  flickableItem.onContentYChanged: {
+            flickableItem.onContentYChanged: {
                 console.log("xxxxxx")
                 displayAnswerChoices()
-            }*/
+            }
 
             onWidthChanged: {
         //        textAreaDestination.displayAnswerChoices()
@@ -565,19 +566,11 @@ ActivityBase {
             }
         }
 
- /*       ColorDialog {
-            id: colorDialog
-            color: "black"
-        }*/
-
-
-
 
         TextArea {
             Accessible.name: "document"
             id: textArea
-
-
+            frameVisible: false
             width: parent.width - (parent.width/3)
             height: parent.height/3 - 20
             x: parent.width/3
@@ -588,15 +581,15 @@ ActivityBase {
             baseUrl: "qrc:/"
             text: document.text
             textFormat: Qt.RichText
-         //   Component.onCompleted: forceActiveFocus()
+            Component.onCompleted: forceActiveFocus()
 
-        /*    Component.onCompleted: {
-                textArea.text = destDocument.text
+         /*   Component.onCompleted: {
+                textArea.text = document.text
             }*/
 
-            onTextChanged: {
+        /*    onTextChanged: {
                 textAreaDestination.startExercice()
-            }
+            }*/
 
 
         }
@@ -605,14 +598,18 @@ ActivityBase {
 
         DocumentHandler {
             id: document
-
             target: textArea
             cursorPosition: textArea.cursorPosition
             selectionStart: textArea.selectionStart
             selectionEnd: textArea.selectionEnd
             textColor: colorDialog.color
-            Component.onCompleted: document.fileUrl = "qrc:/example.html"
-            onFontSizeChanged: {
+//            Component.onCompleted: document.fileUrl = "qrc:/example.html"
+            Component.onCompleted: {
+                document.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
+
+            }
+
+         /*   onFontSizeChanged: {
                 fontSizeSpinBox.valueGuard = false
                 fontSizeSpinBox.value = document.fontSize
                 fontSizeSpinBox.valueGuard = true
@@ -626,11 +623,11 @@ ActivityBase {
                     fontFamilyComboBox.currentIndex = index
                     fontFamilyComboBox.special = false
                 }
-            }
-            onError: {
+            }*/
+        /*    onError: {
                 errorDialog.text = message
                 errorDialog.visible = true
-            }
+            }*/
 
         }
 
@@ -648,7 +645,7 @@ ActivityBase {
             selectionEnd: textAreaDestination.selectionEnd
           //  textColor: colorDialog.color
             Component.onCompleted: {
-                destDocument.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
+                //destDocument.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
 
             }
             onError: {
@@ -656,6 +653,11 @@ ActivityBase {
                 errorDialog.visible = true
             }
          }
+
+        ColorDialog {
+            id: colorDialog
+            color: "black"
+        }
 
         Action {
             id: cutAction
@@ -685,64 +687,25 @@ ActivityBase {
         }
 
         Action {
-            id: boldAction
-            text: "&Bold"
-            iconSource: "images/textbold.png"
-            iconName: "format-text-bold"
-            onTriggered: document.bold = !document.bold
-            checkable: true
-            checked: document.bold
-        }
-
-      /*  Action {
-            id: alignLeftAction
-            text: "&Left"
-            iconSource: "images/textleft.png"
-            iconName: "format-justify-left"
-            shortcut: "ctrl+l"
-            onTriggered: document.alignment = Qt.AlignLeft
-            checkable: true
-            checked: document.alignment == Qt.AlignLeft
-        }
-        Action {
-            id: alignCenterAction
-            text: "C&enter"
-            iconSource: "images/textcenter.png"
-            iconName: "format-justify-center"
-            onTriggered: textArea.alignment = Qt.AlignHCenter
-            checkable: true
-            checked: textArea.alignment == Qt.AlignHCenter
-        }
-        Action {
-            id: alignRightAction
-            text: "&Right"
-            iconSource: "images/textright.png"
-            iconName: "format-justify-right"
-            onTriggered: document.alignment = Qt.AlignRight
-            checkable: true
-            checked: document.alignment == Qt.AlignRight
-        }
-        Action {
-            id: alignJustifyAction
-            text: "&Justify"
-            iconSource: "images/textjustify.png"
-            iconName: "format-justify-fill"
-            onTriggered: document.alignment = Qt.AlignJustify
-            checkable: true
-            checked: document.alignment == Qt.AlignJustify
-        }
-
-
-
-        Action {
             id: italicAction
             text: "&Italic"
             iconSource: "images/textitalic.png"
             iconName: "format-text-italic"
             onTriggered: document.italic = !document.italic
             checkable: true
-            checked: document.italic
+            //checked: document.italic
         }
+
+        Action {
+            id: boldAction
+            text: "&Bold"
+            iconSource: "images/textbold.png"
+            iconName: "format-text-bold"
+            onTriggered: document.bold = !document.bold
+            checkable: true
+            //checked: document.bold
+        }
+
         Action {
             id: underlineAction
             text: "&Underline"
@@ -750,11 +713,46 @@ ActivityBase {
             iconName: "format-text-underline"
             onTriggered: document.underline = !document.underline
             checkable: true
-            checked: document.underline
-        }*/
+            //checked: document.underline
+        }
+
+        FileDialog {
+            id: fileDialog
+            nameFilters: ["Text files (*.txt)", "HTML files (*.html, *.htm)"]
+            onAccepted: {
+                if (fileDialog.selectExisting)
+                    document.fileUrl = fileUrl
+                else
+                    document.saveAs(fileUrl, selectedNameFilter)
+            }
+        }
 
 
         Action {
+            id: fileOpenAction
+            iconSource: "images/fileopen.png"
+            iconName: "document-open"
+            text: "Open"
+            onTriggered: {
+                fileDialog.selectExisting = true
+                fileDialog.open()
+            }
+        }
+
+        Action {
+            id: fileSaveAsAction
+            iconSource: "images/filesave.png"
+            iconName: "document-save"
+            text: "Save As…"
+            onTriggered: {
+                fileDialog.selectExisting = false
+                fileDialog.open()
+            }
+        }
+
+
+
+ /*       Action {
             id: prepareAnswerFields
             text: "prepareAnswerFields"
             iconSource: "images/createmultianswerchoices.png"
@@ -843,7 +841,7 @@ ActivityBase {
             onTriggered: {
                 textAreaDestination.startExercice()
             }
-        }
+        }*/
 
 
         ToolBar {
@@ -853,34 +851,62 @@ ActivityBase {
             x: textAreaDestination.width + textAreaDestinationAnchors.margins + 10
             y: textAreaDestinationAnchors.margins + scoreScreen.height + 10
 
+            RowLayout {
+                id: fontSelector
+             //   anchors.fill: parent
+                ComboBox {
+                   id: fontFamilyComboBox
+                   implicitWidth: 150
+                   model: Qt.fontFamilies()
+                   property bool special : false
+                   onActivated: {
+                       if (special == false || index != 0) {
+                           document.fontFamily = textAt(index)
+                       }
+                   }
+                }
+                SpinBox {
+                   id: fontSizeSpinBox
+                   activeFocusOnPress: false
+                   implicitWidth: 50
+                   value: 0
+                   property bool valueGuard: true
+                   onValueChanged: if (valueGuard) document.fontSize = value
+                }
+                Item { Layout.fillWidth: true }
+            }
+
             GridLayout {
                 id: grid
                 columns: 2
+                anchors.top: fontSelector.bottom
 
+                ToolButton { action: fileSaveAction }
                 ToolButton { action: fileOpenAction }
-
-
-
                 ToolButton { action: copyAction }
                 ToolButton { action: cutAction }
                 ToolButton { action: pasteAction }
-
-
-
                 ToolButton { action: boldAction }
                 ToolButton { action: italicAction }
                 ToolButton { action: underlineAction }
 
-
-
-                ToolButton { action: alignLeftAction }
-                ToolButton { action: alignCenterAction }
-                ToolButton { action: alignRightAction }
-                ToolButton { action: alignJustifyAction }
-
-
-
-                ToolButton { action: alignJustifyAction }
+                ToolButton {
+                    id: colorButton
+                   // property var color : document.textColor
+                    Rectangle {
+                        id: colorRect
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        //color: Qt.darker(document.textColor, colorButton.pressed ? 1.4 : 1)
+                        color: "red" //Qt.darker(document.textColor, colorButton.pressed ? 1.4 : 1)
+                        border.width: 1
+                        border.color: Qt.darker(colorRect.color, 2)
+                    }
+                    onClicked: {
+                        colorDialog.color = document.textColor
+                        colorDialog.open()
+                    }
+                }
             }
         }
 
@@ -888,6 +914,7 @@ ActivityBase {
 
         ListModel {
             id: keyWordList
+
             ListElement {
                 name: "Bill Smith"
                 number: "555 3264"
@@ -906,7 +933,11 @@ ActivityBase {
         Rectangle {
             id: keywordsListView
 
-            width: 180; height: 200
+            width: activityToolbar.width;
+            height: 200
+            anchors.top: activityToolbar.bottom
+            anchors.left: activityToolbar.left
+            anchors.topMargin: 10
 
             Component {
                 id: contactDelegate
@@ -978,6 +1009,8 @@ ActivityBase {
             font.pointSize: 24
             color: "black"
         }
+
+
 
     }
 
