@@ -153,8 +153,10 @@ void DocumentHandler::parseDocument()
 void DocumentHandler::saveAs(const QUrl &arg, const QString &fileType)
 {
     bool isHtml = fileType.contains(QLatin1String("htm"));
-    QLatin1String ext(isHtml ? ".html" : ".txt");
+    QLatin1String ext(isHtml ? ".html" : ".htm");
+    qDebug() << "arg" << arg;
     QString localPath = arg.toLocalFile();
+    qDebug() << "localPath" << localPath;
     if (!localPath.endsWith(ext))
         localPath += ext;
     QFile f(localPath);

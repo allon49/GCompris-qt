@@ -62,6 +62,14 @@ ActivityBase {
         onStart: { Activity.start(items) }
         onStop: { Activity.stop() }
 
+
+        DefaultFileDialog {
+            id: testab
+
+            z: 100
+        }
+
+
         TextArea {
             Accessible.name: "destDocument"
             id: textAreaDestination
@@ -635,7 +643,6 @@ ActivityBase {
 
 
 
-
         DocumentHandler {
             id: destDocument
 
@@ -718,7 +725,7 @@ ActivityBase {
 
         FileDialog {
             id: fileDialog
-            nameFilters: ["Text files (*.txt)", "HTML files (*.html, *.htm)"]
+            nameFilters: ["HTML files (*.html *.htm)"]
             onAccepted: {
                 if (fileDialog.selectExisting)
                     document.fileUrl = fileUrl
@@ -730,12 +737,18 @@ ActivityBase {
 
         Action {
             id: fileOpenAction
+
+            property var exercicesList
+
             iconSource: "images/fileopen.png"
             iconName: "document-open"
             text: "Open"
             onTriggered: {
                 fileDialog.selectExisting = true
                 fileDialog.open()
+                exercicesList = exercicesDirectory.getFiles("/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices","*")
+                console.log("exos: " + exercicesList)
+
             }
         }
 
@@ -750,7 +763,9 @@ ActivityBase {
             }
         }
 
-
+        Directory {
+            id: exercicesDirectory
+        }
 
  /*       Action {
             id: prepareAnswerFields
@@ -881,8 +896,9 @@ ActivityBase {
                 columns: 2
                 anchors.top: fontSelector.bottom
 
-                ToolButton { action: fileSaveAction }
+
                 ToolButton { action: fileOpenAction }
+                ToolButton { action: fileSaveAsAction }
                 ToolButton { action: copyAction }
                 ToolButton { action: cutAction }
                 ToolButton { action: pasteAction }

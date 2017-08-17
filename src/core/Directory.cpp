@@ -22,6 +22,7 @@
 #include "Directory.h"
 #include <QDir>
 #include <QQmlComponent>
+#include <QDebug>
 
 Directory::Directory(QObject *parent) : QObject(parent)
 {
@@ -30,6 +31,7 @@ Directory::Directory(QObject *parent) : QObject(parent)
 QStringList Directory::getFiles(const QString& location, const QStringList &nameFilters)
 {
     QDir dir(location);
+    qDebug() << "location" << location;
     return dir.entryList(nameFilters);
 }
 
