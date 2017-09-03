@@ -38,6 +38,8 @@ ActivityBase {
     onStart: focus = true
     onStop: {}
 
+
+
     pageComponent: Rectangle {
         id: background
         anchors.fill: parent
@@ -63,11 +65,7 @@ ActivityBase {
         onStop: { Activity.stop() }
 
 
-        DefaultFileDialog {
-            id: testab
 
-            z: 100
-        }
 
 
         TextArea {
@@ -82,6 +80,7 @@ ActivityBase {
             property var originalText: String
 
             width: parent.width - (parent.width/5)
+
 
             anchors {
                 id: textAreaDestinationAnchors
@@ -612,10 +611,10 @@ ActivityBase {
             selectionEnd: textArea.selectionEnd
             textColor: colorDialog.color
 //            Component.onCompleted: document.fileUrl = "qrc:/example.html"
-            Component.onCompleted: {
+           /* Component.onCompleted: {
                 document.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
 
-            }
+            }*/
 
          /*   onFontSizeChanged: {
                 fontSizeSpinBox.valueGuard = false
@@ -739,15 +738,25 @@ ActivityBase {
             id: fileOpenAction
 
             property var exercicesList
+           // property var extensionList
 
             iconSource: "images/fileopen.png"
             iconName: "document-open"
             text: "Open"
             onTriggered: {
-                fileDialog.selectExisting = true
-                fileDialog.open()
-                exercicesList = exercicesDirectory.getFiles("/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices","*")
+             //   fileDialog.selectExisting = true
+             //   fileDialog.open()
+                var extensionList = ["*.htm", "*.html"]
+
+                console.log("extension list:" + extensionList)
+                exercicesList = exercicesDirectory.getFiles("/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices",extensionList)
                 console.log("exos: " + exercicesList)
+                for (var i = 0; i < exercicesList.length; i++) {
+                    exercicesListModel.append({exerciceFilename: exercicesList[i]})
+                }
+                for (var i = 0; i < exercicesList.length; i++) {
+                    console.log("test2: " + exercicesListModel.get(i))
+                }
 
             }
         }
@@ -929,9 +938,11 @@ ActivityBase {
 
 
         ListModel {
-            id: keyWordList
+            id: exercicesListModel
 
-            ListElement {
+            ListElement { exerciceFilename: "" }
+
+        /*    ListElement {
                 name: "Bill Smith"
                 number: "555 3264"
             }
@@ -942,40 +953,69 @@ ActivityBase {
             ListElement {
                 name: "Sam Wise"
                 number: "555 0473"
-            }
+            }*/
         }
 
 
-        Rectangle {
-            id: keywordsListView
 
-            width: activityToolbar.width;
-            height: 200
-            anchors.top: activityToolbar.bottom
-            anchors.left: activityToolbar.left
-            anchors.topMargin: 10
+
+        Rectangle {
+            anchors.top : textAreaDestination.anchors.top + textAreaDestinationAnchors.margins
+            anchors.left : textAreaDestination.anchors.left + textAreaDestinationAnchors.margins
+
+            x: 100
+            y: 100
+            width: 400;
+            height: 400
+            z: 1000
 
             Component {
                 id: contactDelegate
                 Item {
                     width: 180; height: 40
                     Column {
-                        Text { text: '<b>Name:</b> ' + name }
-                        Text { text: '<b>Number:</b> ' + number }
+                        Text { text: '<b>exerciceFilename:</b> ' + exerciceFilename }
+                        //Text { text: '<b>Number:</b> ' + number }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            exercicesListView.currentIndex = index
+                            //document.fileUrl = "/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices/" + exerciceFilename
+                            console.log("111- " + "/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices/" + exerciceFilename)
+                            //document.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/example.html"
+                            console.log("qrc:///gcompris/src/activities/multiple-choice-questions/example.html")
+                            //document.fileUrl = "qrc:///gcompris/src/activities/multiple-choice-questions/Exercices/" + exerciceFilename
+                            document.fileUrl = ":/gcompris/src/activities/multiple-choice-questions/Exercices/" + exerciceFilename
+
+
+
+                        }
                     }
                 }
             }
 
             ListView {
+                id: exercicesListView
+
+              //  anchors.top : textAreaDestination.anchors.top
+               // anchors.fill: textAreaDestination
                 anchors.fill: parent
-                model: keyWordList
+                model: exercicesListModel
                 delegate: contactDelegate
-                highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+                highlight: Rectangle {
+                    width: parent.width
+                    color: "lightsteelblue";
+                    radius: 5
+                    Text {
+                        anchors.centerIn: parent
+                        text: "yyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" //'Hello ' + model.get(list.currentIndex).exerciceFilename
+                        color: 'white'
+                    }
+                }
                 focus: true
             }
         }
-
-
 
         DialogHelp {
             id: dialogHelp

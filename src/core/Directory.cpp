@@ -31,6 +31,7 @@ Directory::Directory(QObject *parent) : QObject(parent)
 QStringList Directory::getFiles(const QString& location, const QStringList &nameFilters)
 {
     QDir dir(location);
+    qDebug() << "namefilter" << nameFilters;
     qDebug() << "location" << location;
     return dir.entryList(nameFilters);
 }
