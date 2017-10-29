@@ -313,8 +313,6 @@ ActivityBase {
                 var score = 0
                 for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
 
-
-
                     var goodAnswers = textAreaDestination.multipleChoicesElementsArray[i].goodAnswers
                     var comboBoxValue = textAreaDestination.multipleChoicesElementsArray[i].comboBoxValue
                     var shuffledVar = textAreaDestination.multipleChoicesElementsArray[i].shuffledPossibleAnswers
@@ -334,18 +332,14 @@ ActivityBase {
                         textAreaDestination.insertSuccessAndFailMark(false, i)
                     }
 
-
                 }
                 textAreaDestination.insertMultipleChoiceBoxes()
                 scoreScreen.text = "Score : " + score + "/" + multipleChoicesElementsArray.length
-
-
             }
 
 
 
             function insertSpaceForMultipleChoiceBoxes() {
-
                 var nbOfCharToAdd = 0
                 for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
 
@@ -377,7 +371,6 @@ ActivityBase {
                     textAreaDestination.multipleChoicesElementsArray[i].posInDestText = choiceStrPosition
                     nbOfCharToAdd = nbOfCharToAdd + insertedLongestStringLength
                 }
-
             }
 
             function insertMultipleChoiceBoxes() {
@@ -752,7 +745,7 @@ ActivityBase {
                 exercicesList = exercicesDirectory.getFiles("/home/charruau/Development/MyGCompris/GCompris-qt/src/activities/multiple-choice-questions/Exercices",extensionList)
                 console.log("exos: " + exercicesList)
                 for (var i = 0; i < exercicesList.length; i++) {
-                    exercicesListModel.append({exerciceFilename: exercicesList[i]})
+                    exercicesListModel.append({exerciceFilename: exercicesList[i], pedagogicObjective: "Adding numbers.", pedagogicApproach: "Adding one, then one, then one."})
                 }
                 for (var i = 0; i < exercicesList.length; i++) {
                     console.log("test2: " + exercicesListModel.get(i))
@@ -771,6 +764,7 @@ ActivityBase {
                 fileDialog.open()
             }
         }
+
 
         Directory {
             id: exercicesDirectory
@@ -940,24 +934,22 @@ ActivityBase {
         ListModel {
             id: exercicesListModel
 
-            ListElement { exerciceFilename: "" }
+            ListElement {
+                exerciceFilename: ""
+                pedagogicObjective: ""
+                pedagogicApproach: ""
+            }
 
         /*    ListElement {
                 name: "Bill Smith"
                 number: "555 3264"
             }
-            ListElement {
-                name: "John Brown"
-                number: "555 8426"
-            }
+
             ListElement {
                 name: "Sam Wise"
                 number: "555 0473"
             }*/
         }
-
-
-
 
         Rectangle {
             anchors.top : textAreaDestination.anchors.top + textAreaDestinationAnchors.margins
@@ -971,11 +963,15 @@ ActivityBase {
 
             Component {
                 id: contactDelegate
+
                 Item {
-                    width: 180; height: 40
+                    width: 180; height: 50
                     Column {
+                        id: exercicesSelectionColumn
+
                         Text { text: '<b>exerciceFilename:</b> ' + exerciceFilename }
-                        //Text { text: '<b>Number:</b> ' + number }
+                        Text { text: '<b>Pedagogic Objective:</b> ' + pedagogicObjective }
+                        Text { text: '<b>pedagogicApproach:</b> ' + pedagogicApproach }
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -1007,11 +1003,11 @@ ActivityBase {
                     width: parent.width
                     color: "lightsteelblue";
                     radius: 5
-                    Text {
+                  /*  Text {
                         anchors.centerIn: parent
                         text: "yyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" //'Hello ' + model.get(list.currentIndex).exerciceFilename
                         color: 'white'
-                    }
+                    }*/
                 }
                 focus: true
             }
