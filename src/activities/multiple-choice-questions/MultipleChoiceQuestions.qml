@@ -60,6 +60,12 @@ ActivityBase {
             property alias background: background
             property alias bar: bar
             property alias bonus: bonus
+            property alias textArea: textArea
+            property alias textAreaDestination: textAreaDestination
+            property alias destDocument: destDocument
+            property alias scoreScreen: scoreScreen
+            property alias answerChoicesComboBoxesRepeater: answerChoicesComboBoxesRepeater
+
         }
 
         onStart: { Activity.start(items) }
@@ -87,12 +93,6 @@ ActivityBase {
                 anchors.fill: parent
                 anchors.margins: 2
 
-                property var multipleChoicesElementsArray : []
-                property var displayAnswerMarks : Boolean
-                property var answersPlacesInserted: Boolean
-                property var resultMarkStrInserted: Boolean
-                property var answerFieldsPrepared: Boolean
-                property var originalText: String
 
                 style: TextAreaStyle {
                     textColor: "#333"
@@ -104,310 +104,15 @@ ActivityBase {
                 textFormat: Qt.RichText
 
                 Component.onCompleted: {
-                    displayAnswerMarks = false
-                    answersPlacesInserted = false
-                    resultMarkStrInserted = false
-                    answerFieldsPrepared = false
+           //         displayAnswerMarks = false
+             //       answersPlacesInserted = false
+              //      resultMarkStrInserted = false
+                //    answerFieldsPrepared = false
                     //startExercice()
                 }
 
 
-                function longestStrInArray(arr) {
-                    var lgth = 0;
-                    var longest = "";
 
-                    for(var i=0; i < arr.length; i++){
-                        if(arr[i].length > lgth){
-                            var lgth = arr[i].length;
-                            longest = arr[i];
-                        }
-                    }
-                    return longest
-                }
-
-                function shuffle(array) {
-                    var currentIndex = array.length, temporaryValue, randomIndex;
-
-                    // While there remain elements to shuffle...
-                    while (0 !== currentIndex) {
-
-                        // Pick a remaining element...
-                        randomIndex = Math.floor(Math.random() * currentIndex);
-                        currentIndex -= 1;
-
-                        // And swap it with the current element.
-                        temporaryValue = array[currentIndex];
-                        array[currentIndex] = array[randomIndex];
-                        array[randomIndex] = temporaryValue;
-                    }
-
-                    return array;
-                }
-
-
-
-                function startExercice() {
-                    resultMarkStrInserted = false
-                    textAreaDestination.prepareAnswerFields()
-                    textAreaDestination.insertSpaceForMultipleChoiceBoxes()
-                    textAreaDestination.insertMultipleChoiceBoxes()
-                }
-
-                function prepareAnswerFields() {
-
-                    answersPlacesInserted = false
-
-                    textAreaDestination.text = textArea.text
-
-                    var openingBracketPos = 0
-                    var closingBracketPos = 0
-                    var bracketOpened = false
-
-                    var openingBracketPosInDestTextArea = 0
-                    var closingBracketPosInDestTextArea = 0
-
-                    var nbOfCharactersRemoved = 0
-
-                    var indexTest = 0
-
-                    multipleChoicesElementsArray = []
-
-                    for (var i = 0; i < textArea.length; i++) {
-                        var oneTextChar = textArea.getText(i,i+1)
-
-                        if (oneTextChar == "[" && bracketOpened == true) {
-                            errorMessage.text = "Two opening brackets ([) can not follow each other"
-                        }
-
-                        if (oneTextChar == "[") {
-                            openingBracketPos = i
-                            openingBracketPosInDestTextArea = openingBracketPos - nbOfCharactersRemoved
-                            bracketOpened = true
-                        }
-
-                        //using closing bracket, detects a question and extract its information
-                        if (bracketOpened == true && oneTextChar == "]") {
-                            closingBracketPos = i
-                            closingBracketPosInDestTextArea = closingBracketPos - nbOfCharactersRemoved
-
-                            bracketOpened = false
-
-                            //extract the question, good and bad answers from multiple choices infos
-                            var multipleChoiceElementStr = textArea.getText(openingBracketPos+1,closingBracketPos)
-                            var questionStr
-                            var goodAnswersArray = []
-                            var badAnswersArray = []
-                            var multipleChoiceElementStrArray = multipleChoiceElementStr.split("|")
-                            for (var j = 0; j < multipleChoiceElementStrArray.length; j++) {
-                                if (j == 0) {
-                                    questionStr = multipleChoiceElementStrArray[0]
-                                }
-                                else
-                                {
-                                    if (multipleChoiceElementStrArray[j][multipleChoiceElementStrArray[j].length-1] == "*") {
-                                        multipleChoiceElementStrArray[j] = multipleChoiceElementStrArray[j].substr(0,multipleChoiceElementStrArray[j].length-1)
-                                        goodAnswersArray.push(multipleChoiceElementStrArray[j])
-                                    }
-                                    else {
-                                        badAnswersArray.push(multipleChoiceElementStrArray[j])
-                                    }
-                                }
-                            }
-
-                            //store the for each question, its position, its good and bad answers
-                            var multipleChoiceElement = {posInText:0, posInDestText:0, posInDestTextX:0, posInDestTextY:0, comboboxWidth:0, comboBoxValue:"", comboBoxIndex:0, answerFontFamily:"", answerFontSize:0, question:"", questionLength:0, shuffledPossibleAnswers:[], goodAnswers:[], badAnswers:[], longestChoiceStr:[], userAnswer:""}
-
-
-                            multipleChoiceElement.posInText = openingBracketPosInDestTextArea
-                            multipleChoiceElement.question = questionStr
-                            var questionLength = questionStr.length
-                            multipleChoiceElement.questionLength = questionLength
-                            multipleChoiceElement.goodAnswers = goodAnswersArray
-                            multipleChoiceElement.badAnswers = badAnswersArray
-                            multipleChoiceElement.shuffledPossibleAnswers = shuffle(goodAnswersArray.concat(badAnswersArray))
-                            multipleChoiceElement.longestChoiceStr = longestStrInArray(multipleChoiceElement.shuffledPossibleAnswers)
-                            multipleChoicesElementsArray.push(multipleChoiceElement)
-
-                            //remove the open bracket, the bad good and bad answers and the closing bracket
-                            textAreaDestination.remove(openingBracketPosInDestTextArea+questionLength+1,closingBracketPosInDestTextArea+1)
-                            textAreaDestination.remove(openingBracketPosInDestTextArea,openingBracketPosInDestTextArea+1)
-
-                            //color the "question" text
-                            destDocument.selectionStart = openingBracketPosInDestTextArea
-                            destDocument.selectionEnd = openingBracketPosInDestTextArea+questionLength
-                            destDocument.cursorPosition = openingBracketPosInDestTextArea
-                            destDocument.textColor = "blue"
-
-                            nbOfCharactersRemoved = nbOfCharactersRemoved + (closingBracketPos - openingBracketPos - questionLength +1)
-
-                        }
-                        scoreScreen.text = "Score : 0/" + multipleChoicesElementsArray.length
-                    }
-                    answerFieldsPrepared = true
-                }
-
-
-                function deleteAnswerChoices() {
-                    for (var i=0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-
-                        //prepare the positions of the questions
-                        var currentMultipleChoicesElements = textAreaDestination.multipleChoicesElementsArray[i]
-                        var wordStartPos = currentMultipleChoicesElements.posInText// + nbOfChartoAdd
-                        var wordEndPos = wordStartPos + currentMultipleChoicesElements.question.length-1
-
-                        //prepare an array containing all the possible answers
-        //                var multipleChoicesArray = textAreaDestination.multipleChoicesElementsArray[i].goodAnswers.concat(textAreaDestination.multipleChoicesElementsArray[i].badAnswers)
-
-                        //find what is the longest choice in choicesArray and insert it in the text to prepare the place for the ComboBox
-        //                var longestChoiceStr = longestStrInArray(multipleChoicesArray)
-
-                        //delete the dummy answered written to reserve the combo box place
-                        textAreaDestination.remove(wordEndPos+1, wordEndPos+1 + textAreaDestination.multipleChoicesElementsArray[i].longestChoiceStr.length+3)
-
-                                      //  console.log("longestChoiceStr: %1 - longestChoiceStrLength: %2".arg(longestChoiceStr).arg(longestChoiceStr.length))
-
-                                      //  textAreaDestination.insert(wordEndPos+1, "#")
-                                      //  textAreaDestination.insert(wordEndPos+1 + longestChoiceStr.length+5, "#")
-                    }
-                    answerChoicesComboBoxesRepeater.model = []
-                }
-
-
-                function insertSuccessAndFailMark(result, choiceNumber) {
-
-                    textAreaDestination.resultMarkStrInserted = true
-
-                    var resultMarkStr = "<span style=\"color:green; font-size:%1pt;\"><pre> &#10004;</pre></span>".arg(textAreaDestination.multipleChoicesElementsArray[choiceNumber].answerFontSize)
-                    if (result == false) {
-                        resultMarkStr = "<span style=\"color:red; font-size:%1pt;\"><pre> &#10060;</pre></span>".arg(textAreaDestination.multipleChoicesElementsArray[choiceNumber].answerFontSize)
-                    }
-
-                    var resultMarkStrPos = textAreaDestination.multipleChoicesElementsArray[choiceNumber].posInDestText + textAreaDestination.multipleChoicesElementsArray[choiceNumber].longestChoiceStr.length + 1
-
-                    //var answerStr = "<span style=\"color:red; font-size:%1pt;\"><pre>%2</pre></span>".arg(fontSize).arg(insertedLongestString)
-                    textAreaDestination.insert(resultMarkStrPos, resultMarkStr)
-
-                    // shift the next multiple choices places from two chars: a blanck and the answerMark character
-                    for (var i = choiceNumber+1; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-                        textAreaDestination.multipleChoicesElementsArray[i].posInDestText = textAreaDestination.multipleChoicesElementsArray[i].posInDestText + 2
-                    }
-                }
-
-
-
-
-                function deleteSuccessAndFailMark() {
-
-                    if (textAreaDestination.resultMarkStrInserted) {
-                        for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-
-                            var resultMarkStrPos = textAreaDestination.multipleChoicesElementsArray[i].posInDestText + textAreaDestination.multipleChoicesElementsArray[i].longestChoiceStr.length + 1
-
-                            textAreaDestination.remove(resultMarkStrPos,resultMarkStrPos+2)
-
-                            // shift the next multiple choices places from two chars: a blanck and the answerMark character
-                            for (var j = i+1; j<textAreaDestination.multipleChoicesElementsArray.length; j++) {
-                                textAreaDestination.multipleChoicesElementsArray[j].posInDestText = textAreaDestination.multipleChoicesElementsArray[j].posInDestText - 2
-                            }
-                        }
-                    }
-                    textAreaDestination.resultMarkStrInserted = false
-                }
-
-
-                function checkAnswers() {
-
-                    if (textAreaDestination.resultMarkStrInserted) {
-                        textAreaDestination.deleteSuccessAndFailMark()
-                    }
-
-                    var score = 0
-                    for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-
-                        var goodAnswers = textAreaDestination.multipleChoicesElementsArray[i].goodAnswers
-                        var comboBoxValue = textAreaDestination.multipleChoicesElementsArray[i].comboBoxValue
-                        var shuffledVar = textAreaDestination.multipleChoicesElementsArray[i].shuffledPossibleAnswers
-                     //   console.log("goodAnswers")
-                     //   console.log(goodAnswers)
-                     //   console.log("comboBoxValue")
-                     //   console.log(comboBoxValue)
-                        console.log("shuffled var " + i + ":")
-                        console.log(shuffledVar)
-                        var result = goodAnswers.indexOf(comboBoxValue);
-                        if (result != -1) {
-                            textAreaDestination.insertSuccessAndFailMark(true, i)
-                            score = score + 1
-                        }
-                        else
-                        {
-                            textAreaDestination.insertSuccessAndFailMark(false, i)
-                        }
-
-                    }
-                    textAreaDestination.insertMultipleChoiceBoxes()
-                    scoreScreen.text = "Score : " + score + "/" + multipleChoicesElementsArray.length
-                }
-
-
-
-                function insertSpaceForMultipleChoiceBoxes() {
-                    var nbOfCharToAdd = 0
-                    for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-
-                            //create character spaces for the combo box
-
-                        //store the question start and end position
-                        var currentMultipleChoicesElements = textAreaDestination.multipleChoicesElementsArray[i]
-                        var wordStartPos = currentMultipleChoicesElements.posInText
-                        var wordEndPos = wordStartPos + currentMultipleChoicesElements.question.length-1
-
-                        //read and store the question characters family and size
-                        destDocument.cursorPosition = wordStartPos
-                        destDocument.selectionStart = wordStartPos
-                        destDocument.selectionEnd = wordEndPos
-                        var fontSize = destDocument.fontSize
-                        textAreaDestination.multipleChoicesElementsArray[i].answerFontSize = fontSize
-                        var fontFamily = destDocument.fontFamily
-                        textAreaDestination.multipleChoicesElementsArray[i].answerFontFamily = fontFamily
-
-                        //console.log("+++++++**++++++++" + textAreaDestination.multipleChoicesElementsArray[i].userAnswer)
-
-                        //find what is the longest choice in choicesArray and insert it in the text to prepare the place for the ComboBox
-                        var insertedLongestString = " " + textAreaDestination.multipleChoicesElementsArray[i].longestChoiceStr
-                        var insertedLongestStringLength = insertedLongestString.length
-
-                        var answerStr = "<span style=\"color:red; font-size:%1pt;\"><pre>%2</pre></span>".arg(fontSize).arg(insertedLongestString)
-                        var choiceStrPosition = wordEndPos + 1 + nbOfCharToAdd
-                        textAreaDestination.insert(choiceStrPosition, answerStr)
-                        textAreaDestination.multipleChoicesElementsArray[i].posInDestText = choiceStrPosition
-                        nbOfCharToAdd = nbOfCharToAdd + insertedLongestStringLength
-                    }
-                }
-
-                function insertMultipleChoiceBoxes() {
-                    for (var i = 0; i<textAreaDestination.multipleChoicesElementsArray.length; i++) {
-
-                        //store the multiple choices answers positions in array to be used in model
-                        var comboBoxPos = textAreaDestination.multipleChoicesElementsArray[i].posInDestText
-                        var rect = textAreaDestination.positionToRectangle(comboBoxPos+1)
-                        textAreaDestination.multipleChoicesElementsArray[i].posInDestTextX = rect.x
-                        textAreaDestination.multipleChoicesElementsArray[i].posInDestTextY = rect.y
-
-                        //calculate choices answers width to set combobox width
-                        destDocument.cursorPosition = comboBoxPos+3
-                        destDocument.selectionStart = comboBoxPos +3
-                        destDocument.selectionEnd = comboBoxPos+4
-                        var stringWidth = destDocument.stringWidth
-                        textAreaDestination.multipleChoicesElementsArray[i].comboboxWidth = stringWidth
-                    }
-
-                    answerChoicesComboBoxesRepeater.model = textAreaDestination.multipleChoicesElementsArray
-                }
-
-
-                function deleteMultipleChoiceBoxes() {
-                    answerChoicesComboBoxesRepeater.model = []
-                }
 
 
 
@@ -417,7 +122,7 @@ ActivityBase {
 
                 flickableItem.onContentYChanged: {
                     console.log("xxxxxx")
-                    displayAnswerChoices()
+                    //Activity.displayAnswerChoices()
                 }
 
                 onWidthChanged: {
@@ -482,7 +187,7 @@ ActivityBase {
                         ComboBox {
                             id: box
                             activeFocusOnPress: true
-                            currentIndex: textAreaDestination.multipleChoicesElementsArray[index].comboBoxIndex
+                            currentIndex: Activity.multipleChoicesElementsArray[index].comboBoxIndex
 
                             style: ComboBoxStyle {
                                 id: comboBox
@@ -568,8 +273,8 @@ ActivityBase {
 
                             onCurrentTextChanged: {
                                 //console.log("------- modelData: " + index)
-                                textAreaDestination.multipleChoicesElementsArray[index].comboBoxValue = currentText
-                                textAreaDestination.multipleChoicesElementsArray[index].comboBoxIndex = currentIndex
+                                Activity.multipleChoicesElementsArray[index].comboBoxValue = currentText
+                                Activity.multipleChoicesElementsArray[index].comboBoxIndex = currentIndex
                                 //console.log("------- comboboxvalue" + textAreaDestination.multipleChoicesElementsArray[index].comboBoxValue)
                             }
                         }
@@ -602,7 +307,7 @@ ActivityBase {
                 }*/
 
                 onTextChanged: {
-                    textAreaDestination.startExercice()
+                    Activity.startExercice()
                 }
 
 
@@ -960,7 +665,7 @@ ActivityBase {
           width: 66 * ApplicationInfo.ratio
           height: 66 * ApplicationInfo.ratio
           onClicked: {
-            //rtextAreaDestination.checkAnswers()
+            Activity.checkAnswers()
             destDocument.setExerciceFilename()
           }
         }
